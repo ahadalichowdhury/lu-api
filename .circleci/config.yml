@@ -1,0 +1,49 @@
+version: 2.1
+
+jobs:
+  build-and-deploy:
+    docker:
+      - image: circleci/docker:20.10.12-buster
+    working_directory: ~/app
+    steps:
+      - checkout
+      - run:
+          name: "Install AWS CLI"
+          command: |
+            sudo apt-get update
+            sudo apt-get install python3-pip -y
+            pip3 install awscli --upgrade --user
+      - run:
+          name: "Build Docker image"
+          command: |
+            docker build -t ahadalichowdhury/lu-api .
+      - run:
+          name: "Login to Docker registry"
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - run:
+          name: "Tag Docker image"
+          command: |
+            docker tag $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG $DOCKER_REGISTRY_URL/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+      - run:
+          name: "Push Docker image"
+          command: |
+            docker push $DOCKER_REGISTRY_URL/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+      - run:
+          name: "Deploy to Elastic Beanstalk"
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set region $AWS_REGION
+            eb init lu-api --region $AWS_REGION
+            eb deploy Luapi-env
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build-and-deploy:
+          environment:
+            DOCKER_IMAGE_NAME: ahadalichowdhury/lu-api
+            DOCKER_IMAGE_TAG: latest
+            DOCKER_REGISTRY_URL: docker.io/ahadalichowdhury/lu-api
