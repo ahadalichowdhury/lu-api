@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-and-deploy:
     docker:
-      - image: circleci/docker:20.10.12-buster
+      - image: ahadalichowdhury/lu-api
     working_directory: ~/app
     steps:
       - checkout
