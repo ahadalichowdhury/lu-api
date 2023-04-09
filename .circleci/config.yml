@@ -4,10 +4,6 @@ jobs:
   build-and-deploy:
     docker:
       - image: circleci/docker:20.10.12-buster
-        environment:
-          DOCKER_IMAGE_NAME: ahadalichowdhury/lu-api
-          DOCKER_IMAGE_TAG: latest
-          DOCKER_REGISTRY_URL: docker.io/ahadalichowdhury/lu-api
     working_directory: ~/app
     steps:
       - checkout
@@ -47,3 +43,4 @@ workflows:
   build-and-deploy:
     jobs:
       - build-and-deploy
+
