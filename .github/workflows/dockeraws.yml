@@ -1,39 +1,28 @@
-name: Deploy to Elastic Beanstalk
+name: Docker Image CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  build-and-deploy:
+
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Build Docker image
-        run: |
-          docker build -t ahadalichowdhury/lu-api:latest .
-          docker tag ahadalichowdhury/lu-api:latest ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.us-east-1.amazonaws.com/ahadalichowdhury/lu-api:latest
+    - name: Build the Docker image
+      run: docker build -t ahadalichowdhury/lu-api -f Dockerfile .
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        run: |
-          echo ${{ secrets.AWS_ACCESS_KEY_ID }} | docker login --username AWS --password-stdin ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.us-east-1.amazonaws.com
-
-      - name: Push Docker image to ECR
-        run: |
-          docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.us-east-1.amazonaws.com/ahadalichowdhury/lu-api:latest
-
-      - name: Deploy to Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v14
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "lu-api"
-          environment_name: "Luapi-env"
-          version_label: ${{ github.sha }}
-          region: "us-east-2"
-          wait_for_update: true
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: lu-api
+        environment_name: Luapi-env
+        region: us-east-2
