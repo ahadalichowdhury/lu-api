@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
-        run: docker build -t ahadalichowdhury/lu-api -f Dockerfile .
+        run: docker build .
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v14
         with:
