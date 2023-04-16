@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Get current timestamp
+        id: format-time
+        uses: actions/format-date@v1
+        with:
+          format: 'yyyyMMdd-HHmmss'
+          timezone: 'UTC'
       - name: Build the Docker image
         run: docker build -t ahadalichowdhury/lu-api -f Dockerfile .
       - name: Deploy to EB
@@ -22,4 +28,3 @@ jobs:
           environment_name: Luapi-env
           version_label: "lu-api${{ steps.format-time.outputs.replaced }}"
           region: us-east-2
-          
