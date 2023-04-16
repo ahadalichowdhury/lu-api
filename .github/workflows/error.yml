@@ -2,20 +2,15 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
-
+    branches: 
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - name: Build the Docker image
         run: docker build -t ahadalichowdhury/lu-api -f Dockerfile .
-
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v14
         with:
