@@ -2,23 +2,20 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - name: Get current timestamp
-        id: format-time
-        uses: actions/format-date@v1
-        with:
-          format: 'yyyyMMdd-HHmmss'
-          timezone: 'UTC'
+
       - name: Build the Docker image
         run: docker build -t ahadalichowdhury/lu-api -f Dockerfile .
+
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v14
         with:
@@ -26,5 +23,4 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: lu-api
           environment_name: Luapi-env
-          version_label: "lu-api${{ steps.format-time.outputs.replaced }}"
           region: us-east-2
