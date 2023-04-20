@@ -1,4 +1,3 @@
-
 name: Deploy to Elastic Beanstalk
 
 on:
@@ -41,6 +40,9 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
 
+      - name: Create source bundle
+        run: zip -r app.zip Dockerrun.aws.json
+
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v16
         with:
@@ -50,4 +52,4 @@ jobs:
           environment_name: ${{ env.AWS_ELASTIC_BEANSTALK_ENVIRONMENT_NAME }}
           version_label: ${{ github.sha }}
           region: ${{ env.AWS_REGION }}
-          source_bundle: ${{ env.DOCKER_IMAGE_TAG }}
+          deployment_package: app.zip
