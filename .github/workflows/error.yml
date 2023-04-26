@@ -34,6 +34,6 @@ jobs:
       
       - name: Deploy to AWS Elastic Beanstalk
         run: |
-          eb init my-app --region ${{ secrets.AWS_REGION }}
-          eb use my-env
+          eb init lu-api --region ${{ secrets.AWS_REGION }} --interactive=false
+          eb use Luapi-env
           eb deploy --staged
