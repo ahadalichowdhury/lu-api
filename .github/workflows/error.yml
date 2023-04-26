@@ -25,8 +25,15 @@ jobs:
           sudo apt-get install python3-pip -y
           pip3 install awsebcli --upgrade
       
-      - name: Deploy to AWS Beanstalk
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy to AWS Elastic Beanstalk
         run: |
-          eb init lu-api --region ${{ secrets.AWS_REGION }}
-          eb use Luapi-env
+          eb init my-app --region ${{ secrets.AWS_REGION }}
+          eb use my-env
           eb deploy --staged
